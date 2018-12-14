@@ -1,8 +1,33 @@
+const config = require("config");
+const helmet = require("helmet");
+const morgan = require("morgan");
 const Joi = require("joi");
 const express = require("express");
 const app = express();
+const logger = require("./logger");
+const auth = require("./authentication");
 
+//Find the current env we are working in
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`app: ${app.get("env")}`);
+
+app.use(helmet()); // securing apps with different headers
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // used to send key value parts in the body of the request
+app.use(express.static("public"));
+app.use(logger);
+
+app.use(auth);
+
+//Configuration *NEVER STOP PASSWORDS IN CONFIG FILES*
+console.log("Application Name: " + config.get("name"));
+console.log("Mail Server: " + config.get("mail.host"));
+console.log("Mail Password: " + config.get("mail.password"));
+
+if (app.get("env") === "development") {
+  app.use(morgan("tiny")); // logging HTTP request
+  console.log("Morgan enabled...");
+}
 
 // The app object has many useful methods
 // app.get()

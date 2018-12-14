@@ -1,0 +1,1 @@
+This is readme file! That is a good example of how to use the static middleware
